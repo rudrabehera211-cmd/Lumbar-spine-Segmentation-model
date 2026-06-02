@@ -1,0 +1,82 @@
+dataset:
+  data_dir: "./10159290 (1)"
+  image_subdir: "images/images"
+  mask_subdir: "masks/masks"
+  image_suffix: ""
+  mask_suffix: ""
+  use_3d: true
+  cache_slices: true
+  split_ratios: [0.7, 0.15, 0.15]
+  seed: 42
+
+preprocessing:
+  clip_intensity: true
+  clip_percentiles: [0.5, 99.5]
+  bias_correction: false
+  zscore_normalize: true
+  minmax_normalize: false
+  extract_roi: true
+  roi_margin: 5
+  target_spacing: [1.0, 1.0, 1.0]
+  target_size: [128, 128, 128]
+
+augmentation:
+  rotation: true
+  rotation_degrees: 10
+  rotation_prob: 0.5
+  translation: true
+  translation_px: 10
+  translation_prob: 0.5
+  scaling: true
+  scaling_range: [0.9, 1.1]
+  scaling_prob: 0.5
+  elastic_deformation: true
+  elastic_alpha: 20
+  elastic_sigma: 5
+  elastic_prob: 0.3
+  gaussian_noise: true
+  noise_mean: 0.0
+  noise_std: 0.01
+  noise_prob: 0.3
+  contrast: true
+  contrast_range: [0.8, 1.2]
+  contrast_prob: 0.5
+  brightness: true
+  brightness_range: [-0.1, 0.1]
+  brightness_prob: 0.5
+  mri_specific: true
+  mri_prob: 0.3
+
+model:
+  name: "atm_net"  # unet, attention_unet, unet_plus_plus, unetr, swin_unetr, nnunet, atm_net
+  in_channels: 1
+  num_classes: 12
+  deep_supervision: true
+  params:
+    features: [32, 64, 128, 256, 512]
+
+training:
+  epochs: 100
+  batch_size: 2
+  learning_rate: 0.0001
+  weight_decay: 0.00001
+  min_lr: 0.0000001
+  warmup_epochs: 5
+  gradient_accumulation: 1
+  gradient_clip: 1.0
+  mixed_precision: true
+  early_stopping_patience: 20
+  num_workers: 0
+  loss:
+    name: "dice_focal"
+    weights: [0.5, 0.5]
+    deep_supervision_weights: [0.4, 0.2, 0.2, 0.2]
+
+inference:
+  tta: true
+  batch_size: 1
+
+logging:
+  tensorboard: true
+  wandb: false
+  log_interval: 10
